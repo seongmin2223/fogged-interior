@@ -158,7 +158,7 @@ const items = [
 ];
 
 function GrainOverlay() {
-  return <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 998, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E")`, opacity: 0.4 }} />;
+  return <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 998, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E")`, opacity: 0.4 }} />;
 }
 
 function AuthModal({ mode, setMode, onClose, onSuccess }) {
@@ -171,7 +171,7 @@ function AuthModal({ mode, setMode, onClose, onSuccess }) {
     setLoading(true);
     try {
       if (mode === "signup") {
-        await axios.post("http://https://fogged-interior.onrender.com/api/auth/signup", {
+        await axios.post("https://fogged-interior.onrender.com/api/auth/signup", {
           email: form.email,
           password: form.password,
           nickname: form.nickname,
@@ -180,7 +180,7 @@ function AuthModal({ mode, setMode, onClose, onSuccess }) {
         setMode("login");
         setForm({ email: "", password: "", nickname: "" });
       } else {
-        const res = await axios.post("http://https://fogged-interior.onrender.com/api/auth/login", {
+        const res = await axios.post("https://fogged-interior.onrender.com/api/auth/login", {
           email: form.email,
           password: form.password,
         });
@@ -500,7 +500,7 @@ export default function FoggedApp() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
-    axios.get("http://https://fogged-interior.onrender.com/api/bookmarks", {
+    axios.get("https://fogged-interior.onrender.com/api/bookmarks", {
       headers: { Authorization: `Bearer ${token}` }
     }).then(res => setBookmarks(res.data)).catch(() => { });
   }, [user]);
@@ -514,12 +514,12 @@ export default function FoggedApp() {
       return;
     }
     if (bookmarks.includes(itemId)) {
-      await axios.delete(`http://https://fogged-interior.onrender.com/api/bookmarks/${itemId}`, {
+      await axios.delete(`https://fogged-interior.onrender.com/api/bookmarks/${itemId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setBookmarks(p => p.filter(id => id !== itemId));
     } else {
-      await axios.post(`http://https://fogged-interior.onrender.com/api/bookmarks/${itemId}`, {}, {
+      await axios.post(`https://fogged-interior.onrender.com/api/bookmarks/${itemId}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setBookmarks(p => [...p, itemId]);
