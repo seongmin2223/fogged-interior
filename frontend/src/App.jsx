@@ -171,7 +171,7 @@ function AuthModal({ mode, setMode, onClose, onSuccess }) {
     setLoading(true);
     try {
       if (mode === "signup") {
-        await axios.post("http://localhost:8080/api/auth/signup", {
+        await axios.post("http://https://fogged-interior.onrender.com/api/auth/signup", {
           email: form.email,
           password: form.password,
           nickname: form.nickname,
@@ -180,7 +180,7 @@ function AuthModal({ mode, setMode, onClose, onSuccess }) {
         setMode("login");
         setForm({ email: "", password: "", nickname: "" });
       } else {
-        const res = await axios.post("http://localhost:8080/api/auth/login", {
+        const res = await axios.post("http://https://fogged-interior.onrender.com/api/auth/login", {
           email: form.email,
           password: form.password,
         });
@@ -500,7 +500,7 @@ export default function FoggedApp() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
-    axios.get("http://localhost:8080/api/bookmarks", {
+    axios.get("http://https://fogged-interior.onrender.com/api/bookmarks", {
       headers: { Authorization: `Bearer ${token}` }
     }).then(res => setBookmarks(res.data)).catch(() => { });
   }, [user]);
@@ -514,12 +514,12 @@ export default function FoggedApp() {
       return;
     }
     if (bookmarks.includes(itemId)) {
-      await axios.delete(`http://localhost:8080/api/bookmarks/${itemId}`, {
+      await axios.delete(`http://https://fogged-interior.onrender.com/api/bookmarks/${itemId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setBookmarks(p => p.filter(id => id !== itemId));
     } else {
-      await axios.post(`http://localhost:8080/api/bookmarks/${itemId}`, {}, {
+      await axios.post(`http://https://fogged-interior.onrender.com/api/bookmarks/${itemId}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setBookmarks(p => [...p, itemId]);
