@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
+import axios from "axios";
 
 const moods = [
   { id: "all", label: "ALL", kr: "전체" },
@@ -158,6 +159,110 @@ const items = [
 
 function GrainOverlay() {
   return <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 998, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E")`, opacity: 0.4 }} />;
+}
+
+function AuthModal({ mode, setMode, onClose, onSuccess }) {
+  const [form, setForm] = useState({ email: "", password: "", nickname: "" });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async () => {
+    setError("");
+    setLoading(true);
+    try {
+      if (mode === "signup") {
+        await axios.post("http://localhost:8080/api/auth/signup", {
+          email: form.email,
+          password: form.password,
+          nickname: form.nickname,
+        });
+        setError("");
+        setMode("login");
+        setForm({ email: "", password: "", nickname: "" });
+      } else {
+        const res = await axios.post("http://localhost:8080/api/auth/login", {
+          email: form.email,
+          password: form.password,
+        });
+        localStorage.setItem("token", res.data.token);
+        onSuccess({ nickname: res.data.nickname });
+        onClose();
+      }
+    } catch (e) {
+      const msg = e.response?.data || "";
+      if (mode === "login" && msg.includes("존재하지 않는")) {
+        setError("가입되지 않은 이메일이에요. 회원가입을 먼저 해주세요 🌫️");
+      } else if (mode === "login" && msg.includes("비밀번호")) {
+        setError("비밀번호가 일치하지 않아요.");
+      } else if (mode === "signup" && msg.includes("이미")) {
+        setError("이미 사용 중인 이메일이에요.");
+      } else {
+        setError("잠시 후 다시 시도해주세요.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ position:"fixed", inset:0, zIndex:500, display:"flex", alignItems:"center", justifyContent:"center", animation:"fadeIn 0.2s ease" }}>
+      <div onClick={onClose} style={{ position:"absolute", inset:0, backgroundColor:"rgba(0,0,0,0.82)", backdropFilter:"blur(10px)" }} />
+      <div style={{ position:"relative", zIndex:1, width:"90%", maxWidth:420, backgroundColor:"#141412", border:"1px solid rgba(255,255,255,0.1)", borderRadius:4, padding:"44px 40px", animation:"fadeUp 0.35s ease" }}>
+        <button onClick={onClose} style={{ position:"absolute", top:18, right:18, background:"transparent", border:"1px solid rgba(255,255,255,0.15)", color:"rgba(255,255,255,0.5)", cursor:"pointer", width:28, height:28, borderRadius:"50%", fontSize:10 }}>✕</button>
+
+        <div style={{ fontSize:9, letterSpacing:"0.3em", color:"rgba(255,255,255,0.35)", fontFamily:"'Courier New', monospace", marginBottom:16 }}>— FOGGED</div>
+        <h2 style={{ fontSize:22, fontFamily:"'Georgia', serif", color:"#fff", fontWeight:400, marginBottom:28 }}>
+          {mode === "login" ? "로그인" : "회원가입"}
+        </h2>
+
+        <div style={{ display:"flex", flexDirection:"column", gap:12, marginBottom:20 }}>
+          <input value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
+            placeholder="이메일"
+            style={{ padding:"11px 14px", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:2, color:"#fff", fontSize:12, fontFamily:"'Courier New', monospace", outline:"none" }}
+            onFocus={e => e.target.style.borderColor="rgba(255,255,255,0.35)"}
+            onBlur={e => e.target.style.borderColor="rgba(255,255,255,0.12)"}
+          />
+          <input value={form.password} onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
+            placeholder="비밀번호" type="password"
+            style={{ padding:"11px 14px", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:2, color:"#fff", fontSize:12, fontFamily:"'Courier New', monospace", outline:"none" }}
+            onFocus={e => e.target.style.borderColor="rgba(255,255,255,0.35)"}
+            onBlur={e => e.target.style.borderColor="rgba(255,255,255,0.12)"}
+            onKeyDown={e => e.key === "Enter" && handleSubmit()}
+          />
+          {mode === "signup" && (
+            <input value={form.nickname} onChange={e => setForm(p => ({ ...p, nickname: e.target.value }))}
+              placeholder="닉네임"
+              style={{ padding:"11px 14px", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:2, color:"#fff", fontSize:12, fontFamily:"'Courier New', monospace", outline:"none" }}
+              onFocus={e => e.target.style.borderColor="rgba(255,255,255,0.35)"}
+              onBlur={e => e.target.style.borderColor="rgba(255,255,255,0.12)"}
+              onKeyDown={e => e.key === "Enter" && handleSubmit()}
+            />
+          )}
+        </div>
+
+        {error && (
+          <div style={{ fontSize:11, color:"rgba(255,180,180,0.9)", fontFamily:"'Courier New', monospace", marginBottom:14, lineHeight:1.6 }}>{error}</div>
+        )}
+
+        <button onClick={handleSubmit} disabled={loading}
+          style={{ width:"100%", padding:"12px", fontSize:10, letterSpacing:"0.2em", fontFamily:"'Courier New', monospace", border:"1px solid rgba(255,255,255,0.3)", background:"rgba(255,255,255,0.08)", color:"#fff", cursor:"pointer", borderRadius:2, transition:"all 0.2s", marginBottom:16 }}>
+          {loading ? "..." : mode === "login" ? "LOGIN" : "SIGN UP"}
+        </button>
+
+        <div style={{ textAlign:"center", fontSize:11, color:"rgba(255,255,255,0.4)", fontFamily:"'Courier New', monospace" }}>
+          {mode === "login" ? (
+            <>아직 계정이 없으신가요?{" "}
+              <span onClick={() => { setMode("signup"); setError(""); }} style={{ color:"rgba(255,255,255,0.75)", cursor:"pointer", textDecoration:"underline" }}>회원가입</span>
+            </>
+          ) : (
+            <>이미 계정이 있으신가요?{" "}
+              <span onClick={() => { setMode("login"); setError(""); }} style={{ color:"rgba(255,255,255,0.75)", cursor:"pointer", textDecoration:"underline" }}>로그인</span>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function MoodCanvas({ item }) {
@@ -373,6 +478,13 @@ export default function FoggedApp() {
   const [showAbout, setShowAbout] = useState(false);
   const [cursor, setCursor] = useState({ x: 0, y: 0 });
 
+  const [showAuth, setShowAuth] = useState(false);
+  const [authMode, setAuthMode] = useState("login"); // "login" | "signup"
+  const [user, setUser] = useState(null);
+  // const [authForm, setAuthForm] = useState({ email: "", password: "", nickname: ""});
+  // const [authError, setAuthError] = useState("");
+
+
   useEffect(() => { const fn = () => setScrolled(window.scrollY > 40); window.addEventListener("scroll", fn); return () => window.removeEventListener("scroll", fn); }, []);
   useEffect(() => { const fn = (e) => setCursor({ x: e.clientX, y: e.clientY }); window.addEventListener("mousemove", fn); return () => window.removeEventListener("mousemove", fn); }, []);
 
@@ -402,6 +514,19 @@ export default function FoggedApp() {
           )}
           <span onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(255,255,255,0.45)", cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.45)"}>DISCOVER</span>
           <span onClick={() => setShowAbout(true)} style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(255,255,255,0.45)", cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.45)"}>ABOUT</span>
+          {user ? (
+            <span onClick={() => { setUser(null); localStorage.removeItem("token"); }}
+              style={{ fontSize: 9, letterSpacing: "0.15em", color: "rgba(255,255,255,0.7)", fontFamily: "'Courier New', monospace", cursor: "pointer", padding: "4px 10px", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 1, transition: "all 0.2s" }}
+              onMouseEnter={e => { e.currentTarget.style.color = "#fff"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.4)"; }}
+              onMouseLeave={e => { e.currentTarget.style.color = "rgba(255,255,255,0.7)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)"; }}>
+              {user.nickname} · 로그아웃
+            </span>
+          ) : (
+            <span onClick={() => { setShowAuth(true); setAuthMode("login"); }}
+              style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(255,255,255,0.45)", cursor: "pointer", transition: "color 0.2s" }}
+              onMouseEnter={e => e.target.style.color = "#fff"}
+              onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.45)"}>LOGIN</span>
+          )}
         </div>
       </header>
 
@@ -458,6 +583,14 @@ export default function FoggedApp() {
 
       {showSaved && <SavedDrawer bookmarks={bookmarks} setBookmarks={setBookmarks} allItems={items} onOpen={setSelected} onClose={() => setShowSaved(false)} />}
       {selected && <Modal item={selected} onClose={() => setSelected(null)} allItems={items} onNavigate={setSelected} bookmarks={bookmarks} setBookmarks={setBookmarks} />}
+      {showAuth && (
+        <AuthModal
+          mode={authMode}
+          setMode={setAuthMode}
+          onClose={() => setShowAuth(false)}
+          onSuccess={(userData) => setUser(userData)}
+        />
+      )}
     </div>
   );
 }
