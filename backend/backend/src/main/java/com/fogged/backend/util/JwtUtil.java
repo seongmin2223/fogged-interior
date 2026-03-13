@@ -2,6 +2,7 @@ package com.fogged.backend.util;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -10,7 +11,9 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private final SecretKey key = Jwts.SIG.HS256.key().build();
+    private final SecretKey key = Keys.hmacShaKeyFor(
+            "fogged-secret-key-must-be-at-least-32-bytes!!".getBytes()
+    );
     private final long EXPIRATION = 1000 * 60 * 60 * 24;
 
     public String generateToken(String email) {

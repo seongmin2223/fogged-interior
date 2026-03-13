@@ -185,6 +185,7 @@ function AuthModal({ mode, setMode, onClose, onSuccess }) {
           password: form.password,
         });
         localStorage.setItem("token", res.data.token);
+        localStorage.setItem("nickname", res.data.nickname); // 추가
         onSuccess({ nickname: res.data.nickname });
         onClose();
       }
@@ -205,58 +206,58 @@ function AuthModal({ mode, setMode, onClose, onSuccess }) {
   };
 
   return (
-    <div style={{ position:"fixed", inset:0, zIndex:500, display:"flex", alignItems:"center", justifyContent:"center", animation:"fadeIn 0.2s ease" }}>
-      <div onClick={onClose} style={{ position:"absolute", inset:0, backgroundColor:"rgba(0,0,0,0.82)", backdropFilter:"blur(10px)" }} />
-      <div style={{ position:"relative", zIndex:1, width:"90%", maxWidth:420, backgroundColor:"#141412", border:"1px solid rgba(255,255,255,0.1)", borderRadius:4, padding:"44px 40px", animation:"fadeUp 0.35s ease" }}>
-        <button onClick={onClose} style={{ position:"absolute", top:18, right:18, background:"transparent", border:"1px solid rgba(255,255,255,0.15)", color:"rgba(255,255,255,0.5)", cursor:"pointer", width:28, height:28, borderRadius:"50%", fontSize:10 }}>✕</button>
+    <div style={{ position: "fixed", inset: 0, zIndex: 500, display: "flex", alignItems: "center", justifyContent: "center", animation: "fadeIn 0.2s ease" }}>
+      <div onClick={onClose} style={{ position: "absolute", inset: 0, backgroundColor: "rgba(0,0,0,0.82)", backdropFilter: "blur(10px)" }} />
+      <div style={{ position: "relative", zIndex: 1, width: "90%", maxWidth: 420, backgroundColor: "#141412", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "44px 40px", animation: "fadeUp 0.35s ease" }}>
+        <button onClick={onClose} style={{ position: "absolute", top: 18, right: 18, background: "transparent", border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.5)", cursor: "pointer", width: 28, height: 28, borderRadius: "50%", fontSize: 10 }}>✕</button>
 
-        <div style={{ fontSize:9, letterSpacing:"0.3em", color:"rgba(255,255,255,0.35)", fontFamily:"'Courier New', monospace", marginBottom:16 }}>— FOGGED</div>
-        <h2 style={{ fontSize:22, fontFamily:"'Georgia', serif", color:"#fff", fontWeight:400, marginBottom:28 }}>
+        <div style={{ fontSize: 9, letterSpacing: "0.3em", color: "rgba(255,255,255,0.35)", fontFamily: "'Courier New', monospace", marginBottom: 16 }}>— FOGGED</div>
+        <h2 style={{ fontSize: 22, fontFamily: "'Georgia', serif", color: "#fff", fontWeight: 400, marginBottom: 28 }}>
           {mode === "login" ? "로그인" : "회원가입"}
         </h2>
 
-        <div style={{ display:"flex", flexDirection:"column", gap:12, marginBottom:20 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 20 }}>
           <input value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
             placeholder="이메일"
-            style={{ padding:"11px 14px", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:2, color:"#fff", fontSize:12, fontFamily:"'Courier New', monospace", outline:"none" }}
-            onFocus={e => e.target.style.borderColor="rgba(255,255,255,0.35)"}
-            onBlur={e => e.target.style.borderColor="rgba(255,255,255,0.12)"}
+            style={{ padding: "11px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 2, color: "#fff", fontSize: 12, fontFamily: "'Courier New', monospace", outline: "none" }}
+            onFocus={e => e.target.style.borderColor = "rgba(255,255,255,0.35)"}
+            onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.12)"}
           />
           <input value={form.password} onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
             placeholder="비밀번호" type="password"
-            style={{ padding:"11px 14px", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:2, color:"#fff", fontSize:12, fontFamily:"'Courier New', monospace", outline:"none" }}
-            onFocus={e => e.target.style.borderColor="rgba(255,255,255,0.35)"}
-            onBlur={e => e.target.style.borderColor="rgba(255,255,255,0.12)"}
+            style={{ padding: "11px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 2, color: "#fff", fontSize: 12, fontFamily: "'Courier New', monospace", outline: "none" }}
+            onFocus={e => e.target.style.borderColor = "rgba(255,255,255,0.35)"}
+            onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.12)"}
             onKeyDown={e => e.key === "Enter" && handleSubmit()}
           />
           {mode === "signup" && (
             <input value={form.nickname} onChange={e => setForm(p => ({ ...p, nickname: e.target.value }))}
               placeholder="닉네임"
-              style={{ padding:"11px 14px", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:2, color:"#fff", fontSize:12, fontFamily:"'Courier New', monospace", outline:"none" }}
-              onFocus={e => e.target.style.borderColor="rgba(255,255,255,0.35)"}
-              onBlur={e => e.target.style.borderColor="rgba(255,255,255,0.12)"}
+              style={{ padding: "11px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 2, color: "#fff", fontSize: 12, fontFamily: "'Courier New', monospace", outline: "none" }}
+              onFocus={e => e.target.style.borderColor = "rgba(255,255,255,0.35)"}
+              onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.12)"}
               onKeyDown={e => e.key === "Enter" && handleSubmit()}
             />
           )}
         </div>
 
         {error && (
-          <div style={{ fontSize:11, color:"rgba(255,180,180,0.9)", fontFamily:"'Courier New', monospace", marginBottom:14, lineHeight:1.6 }}>{error}</div>
+          <div style={{ fontSize: 11, color: "rgba(255,180,180,0.9)", fontFamily: "'Courier New', monospace", marginBottom: 14, lineHeight: 1.6 }}>{error}</div>
         )}
 
         <button onClick={handleSubmit} disabled={loading}
-          style={{ width:"100%", padding:"12px", fontSize:10, letterSpacing:"0.2em", fontFamily:"'Courier New', monospace", border:"1px solid rgba(255,255,255,0.3)", background:"rgba(255,255,255,0.08)", color:"#fff", cursor:"pointer", borderRadius:2, transition:"all 0.2s", marginBottom:16 }}>
+          style={{ width: "100%", padding: "12px", fontSize: 10, letterSpacing: "0.2em", fontFamily: "'Courier New', monospace", border: "1px solid rgba(255,255,255,0.3)", background: "rgba(255,255,255,0.08)", color: "#fff", cursor: "pointer", borderRadius: 2, transition: "all 0.2s", marginBottom: 16 }}>
           {loading ? "..." : mode === "login" ? "LOGIN" : "SIGN UP"}
         </button>
 
-        <div style={{ textAlign:"center", fontSize:11, color:"rgba(255,255,255,0.4)", fontFamily:"'Courier New', monospace" }}>
+        <div style={{ textAlign: "center", fontSize: 11, color: "rgba(255,255,255,0.4)", fontFamily: "'Courier New', monospace" }}>
           {mode === "login" ? (
             <>아직 계정이 없으신가요?{" "}
-              <span onClick={() => { setMode("signup"); setError(""); }} style={{ color:"rgba(255,255,255,0.75)", cursor:"pointer", textDecoration:"underline" }}>회원가입</span>
+              <span onClick={() => { setMode("signup"); setError(""); }} style={{ color: "rgba(255,255,255,0.75)", cursor: "pointer", textDecoration: "underline" }}>회원가입</span>
             </>
           ) : (
             <>이미 계정이 있으신가요?{" "}
-              <span onClick={() => { setMode("login"); setError(""); }} style={{ color:"rgba(255,255,255,0.75)", cursor:"pointer", textDecoration:"underline" }}>로그인</span>
+              <span onClick={() => { setMode("login"); setError(""); }} style={{ color: "rgba(255,255,255,0.75)", cursor: "pointer", textDecoration: "underline" }}>로그인</span>
             </>
           )}
         </div>
@@ -291,7 +292,7 @@ function Card({ item, index, onClick }) {
   );
 }
 
-function Modal({ item, onClose, allItems, onNavigate, bookmarks, setBookmarks }) {
+function Modal({ item, onClose, allItems, onNavigate, bookmarks, setBookmarks, toggleBookmark }) {
   const [tab, setTab] = useState("info");
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
@@ -316,7 +317,7 @@ function Modal({ item, onClose, allItems, onNavigate, bookmarks, setBookmarks })
         <div style={{ display: "flex", flex: 1, overflow: "hidden", minHeight: 0 }}>
           <div style={{ width: "40%", flexShrink: 0, position: "relative" }}>
             <MoodCanvas item={item} />
-            <button onClick={() => setBookmarks(p => isBookmarked ? p.filter(id => id !== item.id) : [...p, item.id])}
+            <button onClick={() => toggleBookmark(item.id)}
               style={{ position: "absolute", top: 18, right: 18, width: 34, height: 34, borderRadius: "50%", border: `1px solid ${isBookmarked ? item.accent : "rgba(255,255,255,0.3)"}`, background: isBookmarked ? `${item.accent}28` : "rgba(0,0,0,0.3)", color: isBookmarked ? item.accent : "#fff", fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.3s", backdropFilter: "blur(8px)" }}>
               {isBookmarked ? "✦" : "✧"}
             </button>
@@ -488,6 +489,43 @@ export default function FoggedApp() {
   useEffect(() => { const fn = () => setScrolled(window.scrollY > 40); window.addEventListener("scroll", fn); return () => window.removeEventListener("scroll", fn); }, []);
   useEffect(() => { const fn = (e) => setCursor({ x: e.clientX, y: e.clientY }); window.addEventListener("mousemove", fn); return () => window.removeEventListener("mousemove", fn); }, []);
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const nickname = localStorage.getItem("nickname");
+    if (!token || !nickname) return;
+    setUser({ nickname });
+  }, []);
+
+  // 북마크 불러오기
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    axios.get("http://localhost:8080/api/bookmarks", {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then(res => setBookmarks(res.data)).catch(() => { });
+  }, [user]);
+
+  // 북마크 토글
+  const toggleBookmark = async (itemId) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setShowAuth(true);
+      setAuthMode("login");
+      return;
+    }
+    if (bookmarks.includes(itemId)) {
+      await axios.delete(`http://localhost:8080/api/bookmarks/${itemId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setBookmarks(p => p.filter(id => id !== itemId));
+    } else {
+      await axios.post(`http://localhost:8080/api/bookmarks/${itemId}`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setBookmarks(p => [...p, itemId]);
+    }
+  };
+
   const filtered = activeMood === "all" ? items : items.filter(i => i.mood === activeMood);
 
   return (
@@ -515,7 +553,7 @@ export default function FoggedApp() {
           <span onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(255,255,255,0.45)", cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.45)"}>DISCOVER</span>
           <span onClick={() => setShowAbout(true)} style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(255,255,255,0.45)", cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.45)"}>ABOUT</span>
           {user ? (
-            <span onClick={() => { setUser(null); localStorage.removeItem("token"); }}
+            <span onClick={() => { setUser(null); localStorage.removeItem("token"); localStorage.removeItem("nickname"); }}
               style={{ fontSize: 9, letterSpacing: "0.15em", color: "rgba(255,255,255,0.7)", fontFamily: "'Courier New', monospace", cursor: "pointer", padding: "4px 10px", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 1, transition: "all 0.2s" }}
               onMouseEnter={e => { e.currentTarget.style.color = "#fff"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.4)"; }}
               onMouseLeave={e => { e.currentTarget.style.color = "rgba(255,255,255,0.7)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)"; }}>
@@ -582,7 +620,7 @@ export default function FoggedApp() {
       )}
 
       {showSaved && <SavedDrawer bookmarks={bookmarks} setBookmarks={setBookmarks} allItems={items} onOpen={setSelected} onClose={() => setShowSaved(false)} />}
-      {selected && <Modal item={selected} onClose={() => setSelected(null)} allItems={items} onNavigate={setSelected} bookmarks={bookmarks} setBookmarks={setBookmarks} />}
+      {selected && <Modal item={selected} onClose={() => setSelected(null)} allItems={items} onNavigate={setSelected} bookmarks={bookmarks} setBookmarks={setBookmarks} toggleBookmark={toggleBookmark} />}      
       {showAuth && (
         <AuthModal
           mode={authMode}

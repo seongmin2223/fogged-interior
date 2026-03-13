@@ -36,10 +36,7 @@ public class AuthService {
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("비밀번호가 일차하지 않습니다.");
         }
-        String token = jwtUtil.generateToken(user.getNickname());
+        String token = jwtUtil.generateToken(user.getEmail());
         return new AuthResponse(token, user.getNickname());
     }
-
-
-
 }
