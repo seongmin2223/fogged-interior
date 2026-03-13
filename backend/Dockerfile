@@ -1,6 +1,6 @@
 FROM gradle:8.5-jdk17 AS build
 WORKDIR /app
-COPY . .
+COPY backend/ .
 RUN gradle bootJar --no-daemon
 
 FROM eclipse-temurin:17-jre-jammy
