@@ -6,7 +6,6 @@
 
 > 👉 [FOGGED 바로가기](https://fogged-interior-fkh5medji-seongmin2223s-projects.vercel.app/)
 <br />
-
 ## 📌 프로젝트 소개
 
 **FOGGED**는 무드 기반 인테리어 큐레이션 서비스입니다.  
