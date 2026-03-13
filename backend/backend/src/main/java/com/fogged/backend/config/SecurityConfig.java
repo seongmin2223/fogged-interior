@@ -31,8 +31,10 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(request -> {
                     var config = new org.springframework.web.cors.CorsConfiguration();
-                    config.addAllowedOrigin("http://localhost:5173");
-                    config.addAllowedOrigin("https://fogged-interior-fkh5medji-seongmin2223s-projects.vercel.app");
+                    // SecurityConfig.java의 cors 설정 부분
+                    config.addAllowedOrigin("http://localhost:5173"); // 로컬 테스트용
+                    config.addAllowedOrigin("https://fogged-interior.vercel.app"); // 실제 배포용
+                    config.addAllowedOrigin("https://fogged-interior-fkh5medji-seongmin2223s-projects.vercel.app"); // Vercel 미리보기용
                     config.addAllowedMethod("*");
                     config.addAllowedHeader("*");
                     config.setAllowCredentials(true);
