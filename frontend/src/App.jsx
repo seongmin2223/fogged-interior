@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const API = "https://fogged-interior.onrender.com";
+// const API = "https://fogged-interior.onrender.com";
 
-// const API = "http://localhost:8080";
+const API = "http://localhost:8080";
 
 const moods = [
   { id: "all", label: "ALL", kr: "전체" },
@@ -154,6 +154,13 @@ function Modal({ item, onClose, allItems, onNavigate, bookmarks, setBookmarks, t
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [copiedHex, setCopiedHex] = useState(null);
+
+  // 현재 로그인한 사용자의 정보 (localStorage에 저장된 nickname 기준)
+  const currentUser = localStorage.getItem("nickname");
+
+  // 본인 확인 로직: item.nickname과 현재 로그인한 유저가 같거나, API에서 준 isMine이 true일 때
+  const isMyPost = item.isMine || (currentUser && item.nickname === currentUser);
+
   const isBookmarked = bookmarks.includes(item.id);
   const similarItems = allItems.filter(i => item.similar.includes(i.id));
 
@@ -175,6 +182,39 @@ function Modal({ item, onClose, allItems, onNavigate, bookmarks, setBookmarks, t
         .catch(err => console.error(err));
     }
   }, [item.id]);
+  
+  const deleteItem = async () => {
+    if (!window.confirm("이 공간을 영구적으로 삭제하시겠습니까?")) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`${API}/api/user-items/${item.id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      alert("삭제되었습니다.");
+      window.location.reload();
+      onClose();
+    } catch (err) {
+      const status = err.response?.status;
+      const serverMessage =
+        err.response?.data?.message ||
+        (typeof err.response?.data === "string" ? err.response.data : null);
+
+      if (status === 400) {
+        alert(serverMessage || "댓글이 남아있으면 글을 삭제할 수 없습니다.");
+      }
+      else if (status === 403) {
+        alert(serverMessage || "본인이 작성한 글만 삭제할 수 있습니다.");
+      }
+      else {
+        alert(serverMessage || "삭제 중 오류가 발생했습니다.");
+      }
+
+      console.log("status:", status);
+      console.log("data:", err.response?.data);
+    }
+  };
 
   const addComment = async () => {
     if (!comment.trim()) return;
@@ -196,12 +236,9 @@ function Modal({ item, onClose, allItems, onNavigate, bookmarks, setBookmarks, t
     if (!window.confirm("메모를 삭제하시겠습니까?")) return;
     try {
       const token = localStorage.getItem("token");
-      // 위에서 수정한 Controller 경로에 맞춰 호출 (/api/user-items/comments/{id})
       await axios.delete(`${API}/api/user-items/comments/${commentId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-
-      // 삭제 성공 시 현재 상태(UI)에서 해당 댓글만 필터링해서 제거
       setComments(p => p.filter(c => c.id !== commentId));
     } catch (err) {
       console.error(err);
@@ -248,8 +285,23 @@ function Modal({ item, onClose, allItems, onNavigate, bookmarks, setBookmarks, t
               {tabs.map(t => (
                 <button key={t.id} onClick={() => setTab(t.id)} style={{ padding: "13px 14px", fontSize: 10, letterSpacing: "0.15em", fontFamily: "'Courier New', monospace", background: "transparent", border: "none", borderBottom: tab === t.id ? "1px solid rgba(255,255,255,0.7)" : "1px solid transparent", color: tab === t.id ? "#fff" : "rgba(255,255,255,0.45)", cursor: "pointer", transition: "color 0.2s", marginBottom: -1 }}>{t.label.toUpperCase()}</button>
               ))}
+
+              {/* 본인 확인 조건문이 적용된 삭제 버튼 */}
+              {isMyPost && (
+                <button
+                  onClick={deleteItem}
+                  style={{ padding: "13px 14px", fontSize: 10, letterSpacing: "0.15em", fontFamily: "'Courier New', monospace", background: "transparent", border: "none", color: "#ff4d4d", cursor: "pointer", transition: "opacity 0.2s" }}
+                  onMouseEnter={e => e.target.style.opacity = 0.7}
+                  onMouseLeave={e => e.target.style.opacity = 1}
+                >
+                  DELETE
+                </button>
+              )}
+
               <button onClick={onClose} style={{ marginLeft: "auto", background: "transparent", border: "none", color: "rgba(255,255,255,0.45)", cursor: "pointer", fontSize: 11, fontFamily: "'Courier New', monospace", padding: "13px 0", transition: "color 0.2s" }}>✕ ESC</button>
             </div>
+
+            {/* 탭 내용 영역 */}
             <div style={{ flex: 1, overflowY: "auto", padding: "22px" }}>
               {tab === "info" && (
                 <div style={{ animation: "fadeUp 0.3s ease" }}>
@@ -319,19 +371,9 @@ function Modal({ item, onClose, allItems, onNavigate, bookmarks, setBookmarks, t
                             <p style={{ fontSize: 12, color: "rgba(255,255,255,0.82)", fontFamily: "'Georgia', serif", lineHeight: 1.75, marginBottom: 5, flex: 1 }}>
                               {c.content}
                             </p>
-                            {/* 삭제 버튼 추가 */}
                             <button
                               onClick={() => deleteComment(c.id)}
-                              style={{
-                                background: "transparent",
-                                border: "none",
-                                color: "#fff",
-                                fontSize: 9,
-                                cursor: "pointer",
-                                padding: "0 0 0 10px",
-                                fontFamily: "'Courier New', monospace",
-                                transition: "color 0.2s"
-                              }}
+                              style={{ background: "transparent", border: "none", color: "#fff", fontSize: 9, cursor: "pointer", padding: "0 0 0 10px", fontFamily: "'Courier New', monospace", transition: "color 0.2s" }}
                               onMouseEnter={e => e.target.style.color = "#ff4d4d"}
                               onMouseLeave={e => e.target.style.color = "#fff"}
                             >
@@ -531,20 +573,34 @@ export default function FoggedApp() {
     setUser({ nickname });
   }, []);
 
-  // 아이템 불러오기
   useEffect(() => {
     axios.get(`${API}/api/user-items`)
       .then(res => {
-        setAllItems(res.data.map(item => ({
-          ...item,
-          palette: JSON.parse(item.palette),
-          paletteNames: JSON.parse(item.paletteNames),
-          tags: JSON.parse(item.tags),
-          products: [],
-          similar: [],
-        })));
+        const formattedItems = res.data.map(item => {
+          // 이미 배열이면 그대로 쓰고, 문자열이면 parse 합니다.
+          const parseSafely = (data) => {
+            try {
+              return typeof data === "string" ? JSON.parse(data) : data;
+            } catch (e) {
+              return []; // 에러 나면 빈 배열로 방어
+            }
+          };
+
+          return {
+            ...item,
+            palette: parseSafely(item.palette),
+            paletteNames: parseSafely(item.paletteNames),
+            tags: parseSafely(item.tags),
+            products: item.products || [], // 데이터가 없을 경우를 대비
+            similar: item.similar || [],
+          };
+        });
+
+        setAllItems(formattedItems);
       })
-      .catch(() => { });
+      .catch(err => {
+        console.error("데이터 로딩 에러:", err);
+      });
   }, []);
 
   // 북마크 불러오기
