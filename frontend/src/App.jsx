@@ -12,153 +12,6 @@ const moods = [
   { id: "ash", label: "ASH", kr: "재" },
 ];
 
-const defaultItems = [
-  {
-    id: 1, mood: "fog",
-    title: "Mist Corridor",
-    desc: "반투명 린넨 커튼, 바닥부터 천장까지",
-    longDesc: "안개가 스며들듯, 빛이 천천히 공간을 채우는 복도. 바닥부터 천장까지 이어진 반투명 린넨 커튼이 외부의 소음과 시선을 부드럽게 차단하며 내밀한 분위기를 만들어냅니다. 아침 햇살이 커튼을 통과할 때 나타나는 확산광이 이 공간의 핵심입니다.",
-    tags: ["#린넨", "#화이트", "#자연광"],
-    palette: ["#E8E4DF", "#C9C0B5", "#A89F94", "#D4CFC9", "#F0EDE8"],
-    paletteNames: ["Mist White", "Linen Gray", "Warm Stone", "Pearl", "Soft Ivory"],
-    size: "large", accent: "#B5AFA8",
-    products: [
-      { name: "HAY 린넨 커튼 240cm", price: "₩189,000", brand: "HAY" },
-      { name: "무인양품 오크 플로어램프", price: "₩94,000", brand: "MUJI" },
-      { name: "카시나 화이트 사이드테이블", price: "₩320,000", brand: "Cassina" },
-    ],
-    similar: [6, 5, 9],
-  },
-  {
-    id: 2, mood: "dusk",
-    title: "Ember Corner",
-    desc: "웜 톤 테라코타와 번아웃 벨벳의 만남",
-    longDesc: "황혼 무렵, 창문을 통해 들어오는 주황빛 빛이 테라코타 벽면과 만나는 순간. 번아웃 벨벳 소파의 질감이 빛의 방향에 따라 미묘하게 변하며 공간에 깊이를 더합니다. 간접조명 하나만으로도 충분한, 저녁을 위한 공간입니다.",
-    tags: ["#테라코타", "#벨벳", "#간접조명"],
-    palette: ["#C4714A", "#8B4E35", "#E8C4A0", "#A0522D", "#F2D4B8"],
-    paletteNames: ["Terracotta", "Burnt Sienna", "Warm Sand", "Rust", "Peach Dust"],
-    size: "small", accent: "#C4714A",
-    products: [
-      { name: "B&B 이탈리아 벨벳 소파", price: "₩2,450,000", brand: "B&B Italia" },
-      { name: "Flos 아르코 플로어램프", price: "₩890,000", brand: "Flos" },
-      { name: "HAY 테라코타 사이드테이블", price: "₩145,000", brand: "HAY" },
-    ],
-    similar: [7, 5, 1],
-  },
-  {
-    id: 3, mood: "void",
-    title: "Silent Volume",
-    desc: "소리 없는 공간 — 올 블랙 매트 텍스처",
-    longDesc: "모든 것이 흡수되는 공간. 빛도, 소리도, 시간도. 올 블랙 매트 마감은 반사 없이 공간의 경계를 모호하게 만들며 오브제 하나하나가 허공에 떠 있는 듯한 착시를 만들어냅니다. 미니멀의 극단에서 찾아낸 고요함입니다.",
-    tags: ["#블랙", "#매트", "#미니멀"],
-    palette: ["#1A1A1A", "#2D2D2D", "#404040", "#111111", "#555555"],
-    paletteNames: ["Void Black", "Carbon", "Ash Dark", "Deep Space", "Graphite"],
-    size: "medium", accent: "#888",
-    products: [
-      { name: "Menu 블랙 쉘프 시스템", price: "₩560,000", brand: "Menu" },
-      { name: "Gubi 블랙 매트 펜던트", price: "₩340,000", brand: "Gubi" },
-      { name: "Vipp 블랙 스틸 트레이", price: "₩89,000", brand: "Vipp" },
-    ],
-    similar: [8, 4, 5],
-  },
-  {
-    id: 4, mood: "dawn",
-    title: "Blue Hour Study",
-    desc: "새벽 5시의 서재, 냉기와 고요함",
-    longDesc: "세상이 아직 잠든 새벽 5시. 창밖은 블루아워의 차가운 빛으로 가득하고, 서재에는 독서등 하나만이 켜져 있습니다. 블루그레이 페인트와 월넛 우드의 조합이 차갑고도 따뜻한 긴장감을 만들어냅니다.",
-    tags: ["#블루그레이", "#우드", "#서재"],
-    palette: ["#7B8FA1", "#4A6274", "#D4DDE4", "#9AAAB8", "#C0CDD6"],
-    paletteNames: ["Steel Blue", "Deep Teal", "Morning Mist", "Slate", "Ice Gray"],
-    size: "small", accent: "#7B8FA1",
-    products: [
-      { name: "Louis Poulsen 독서등", price: "₩420,000", brand: "Louis Poulsen" },
-      { name: "Muuto 월넛 책장 120cm", price: "₩780,000", brand: "Muuto" },
-      { name: "Fritz Hansen 체어", price: "₩1,200,000", brand: "Fritz Hansen" },
-    ],
-    similar: [9, 3, 6],
-  },
-  {
-    id: 5, mood: "ash",
-    title: "Pale Archive",
-    desc: "탈색된 콘크리트, 오래된 종이의 냄새",
-    longDesc: "시간이 천천히 모든 색을 빼앗아 간 공간. 탈색된 콘크리트 벽, 빛바랜 오크 마루, 오래된 책들이 만들어내는 레이어. 이 공간에는 새것이 없습니다. 모든 것이 시간의 흔적을 품고 있습니다.",
-    tags: ["#콘크리트", "#베이지", "#인더스트리얼"],
-    palette: ["#C8C2BB", "#A09890", "#E2DDD8", "#B8B0A8", "#D4CEC8"],
-    paletteNames: ["Pale Ash", "Worn Gray", "Chalk", "Cement", "Paper White"],
-    size: "large", accent: "#A09890",
-    products: [
-      { name: "Frama 콘크리트 선반", price: "₩230,000", brand: "Frama" },
-      { name: "Toast 빈티지 오크 스툴", price: "₩195,000", brand: "Toast" },
-      { name: "Serax 콘크리트 화분", price: "₩68,000", brand: "Serax" },
-    ],
-    similar: [1, 6, 3],
-  },
-  {
-    id: 6, mood: "fog",
-    title: "Float Room",
-    desc: "바닥에 닿지 않는 가구들, 부유하는 공간",
-    longDesc: "중력을 거스르는 공간. 모든 가구가 바닥으로부터 살짝 떠 있어 공기가 자유롭게 흐릅니다. 화이트 오크의 따뜻한 결과 벽에 반사되는 간접광이 만들어내는 부유감이 이 공간의 핵심 무드입니다.",
-    tags: ["#화이트오크", "#플로팅", "#스칸디"],
-    palette: ["#F0EDE8", "#D8D0C5", "#B8AFA4", "#E4E0DA", "#C8C0B5"],
-    paletteNames: ["Cloud White", "Warm Cream", "Driftwood", "Linen", "Sand"],
-    size: "medium", accent: "#C5BDB4",
-    products: [
-      { name: "HAY 플로팅 사이드보드", price: "₩890,000", brand: "HAY" },
-      { name: "Normann 오크 커피테이블", price: "₩540,000", brand: "Normann" },
-      { name: "HAY 우드 펜던트 조명", price: "₩210,000", brand: "HAY" },
-    ],
-    similar: [1, 5, 9],
-  },
-  {
-    id: 7, mood: "dusk",
-    title: "Rust Linen Bed",
-    desc: "황혼빛 침실, 구겨진 린넨의 온도",
-    longDesc: "아무것도 정돈하지 않아도 되는 침실. 구겨진 린넨 시트, 무심하게 쌓인 쿠션들, 창문을 통해 들어오는 러스트빛 황혼. 완벽하지 않아서 오히려 완벽한, 저녁의 침실입니다.",
-    tags: ["#러스트", "#린넨", "#침실"],
-    palette: ["#9B5E3C", "#C4855A", "#E8C8A8", "#7A4A2E", "#D4A882"],
-    paletteNames: ["Rust", "Copper", "Warm Linen", "Mahogany", "Blush Sand"],
-    size: "medium", accent: "#9B5E3C",
-    products: [
-      { name: "Tekla 린넨 침구 세트", price: "₩320,000", brand: "Tekla" },
-      { name: "IKEA 러스트 헤드보드", price: "₩145,000", brand: "IKEA" },
-      { name: "Ferm Living 황동 벽조명", price: "₩185,000", brand: "Ferm Living" },
-    ],
-    similar: [2, 5, 1],
-  },
-  {
-    id: 8, mood: "void",
-    title: "Monolith Shelf",
-    desc: "검정 철제 선반, 오브제만이 말한다",
-    longDesc: "선반 그 자체는 존재를 지웁니다. 오직 그 위에 올려진 오브제들만이 공간에서 발언권을 가집니다. 블랙 파우더코팅 철제 선반 시스템은 배경이 되기 위해 태어났습니다.",
-    tags: ["#아이언", "#블랙", "#오브제"],
-    palette: ["#222222", "#333333", "#888888", "#1A1A1A", "#4A4A4A"],
-    paletteNames: ["Iron Black", "Carbon Dark", "Steel", "Midnight", "Gunmetal"],
-    size: "small", accent: "#888",
-    products: [
-      { name: "String 블랙 선반 시스템", price: "₩680,000", brand: "String" },
-      { name: "Aesop 도서관 오브제 세트", price: "₩95,000", brand: "Aesop" },
-      { name: "HAY 블랙 아이언 트레이", price: "₩52,000", brand: "HAY" },
-    ],
-    similar: [3, 4, 5],
-  },
-  {
-    id: 9, mood: "dawn",
-    title: "Grey Milk Light",
-    desc: "흐린 아침, 유리창 너머 확산된 빛",
-    longDesc: "비가 오려는 흐린 아침. 유리창 너머로 균일하게 확산된 회백색 빛이 공간 전체를 같은 온도로 채웁니다. 그림자가 없는 공간, 방향이 없는 빛. 이 공간에서는 모든 것이 동등하게 존재합니다.",
-    tags: ["#그레이", "#유리", "#확산광"],
-    palette: ["#A8B5BF", "#C8D4DC", "#E8EDF0", "#8FA0AC", "#B8C8D4"],
-    paletteNames: ["Morning Steel", "Milk Blue", "Cloud Glass", "Slate Blue", "Mist"],
-    size: "large", accent: "#A8B5BF",
-    products: [
-      { name: "Muuto 그레이 소파 모듈", price: "₩1,850,000", brand: "Muuto" },
-      { name: "Menu 스모크 유리 커피테이블", price: "₩620,000", brand: "Menu" },
-      { name: "Vipp 그레이 울 러그 200×300", price: "₩480,000", brand: "Vipp" },
-    ],
-    similar: [4, 6, 1],
-  },
-];
-
 function GrainOverlay() {
   return <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 998, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E")`, opacity: 0.4 }} />;
 }
@@ -515,7 +368,7 @@ function CreateModal({ onClose, onSuccess }) {
   );
 }
 
-function SavedDrawer({ bookmarks, setBookmarks, allItems, onOpen, onClose }) {
+function SavedDrawer({ bookmarks, setBookmarks, allItems, onOpen, onClose, toggleBookmark }) {
   const saved = allItems.filter(i => bookmarks.includes(i.id));
   useEffect(() => { document.body.style.overflow = "hidden"; return () => { document.body.style.overflow = ""; }; }, []);
   useEffect(() => { const fn = (e) => { if (e.key === "Escape") onClose(); }; window.addEventListener("keydown", fn); return () => window.removeEventListener("keydown", fn); }, [onClose]);
@@ -552,7 +405,7 @@ function SavedDrawer({ bookmarks, setBookmarks, allItems, onOpen, onClose }) {
                     </div>
                     <div style={{ fontSize: 10, color: "rgba(255,255,255,0.55)", fontFamily: "'Courier New', monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.desc}</div>
                   </div>
-                  <button onClick={e => { e.stopPropagation(); setBookmarks(p => p.filter(id => id !== item.id)); }} style={{ background: "transparent", border: "none", color: item.accent, fontSize: 14, cursor: "pointer", padding: "4px", transition: "opacity 0.2s", flexShrink: 0, opacity: 0.8 }} onMouseEnter={e => e.currentTarget.style.opacity = "1"} onMouseLeave={e => e.currentTarget.style.opacity = "0.8"}>✦</button>
+                  <button onClick={e => { e.stopPropagation(); toggleBookmark(item.id); }} style={{ background: "transparent", border: "none", color: item.accent, fontSize: 14, cursor: "pointer", padding: "4px", transition: "opacity 0.2s", flexShrink: 0, opacity: 0.8 }} onMouseEnter={e => e.currentTarget.style.opacity = "1"} onMouseLeave={e => e.currentTarget.style.opacity = "0.8"}>✦</button>
                 </div>
               ))}
             </div>
@@ -579,13 +432,10 @@ export default function FoggedApp() {
   const [cursor, setCursor] = useState({ x: 0, y: 0 });
 
   const [showAuth, setShowAuth] = useState(false);
-  const [authMode, setAuthMode] = useState("login"); // "login" | "signup"
+  const [authMode, setAuthMode] = useState("login");
   const [user, setUser] = useState(null);
-  const [userItems, setUserItems] = useState([]);
+  const [allItems, setAllItems] = useState([]);
   const [showCreate, setShowCreate] = useState(false);
-  // const [authForm, setAuthForm] = useState({ email: "", password: "", nickname: ""});
-  // const [authError, setAuthError] = useState("");
-
 
   useEffect(() => { const fn = () => setScrolled(window.scrollY > 40); window.addEventListener("scroll", fn); return () => window.removeEventListener("scroll", fn); }, []);
   useEffect(() => { const fn = (e) => setCursor({ x: e.clientX, y: e.clientY }); window.addEventListener("mousemove", fn); return () => window.removeEventListener("mousemove", fn); }, []);
@@ -597,13 +447,29 @@ export default function FoggedApp() {
     setUser({ nickname });
   }, []);
 
+  // 아이템 불러오기
+  useEffect(() => {
+    axios.get(`${API}/api/user-items`)
+      .then(res => {
+        setAllItems(res.data.map(item => ({
+          ...item,
+          palette: JSON.parse(item.palette),
+          paletteNames: JSON.parse(item.paletteNames),
+          tags: JSON.parse(item.tags),
+          products: [],
+          similar: [],
+        })));
+      })
+      .catch(() => {});
+  }, []);
+
   // 북마크 불러오기
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
-    axios.get("https://fogged-interior.onrender.com/api/bookmarks", {
+    axios.get(`${API}/api/bookmarks`, {
       headers: { Authorization: `Bearer ${token}` }
-    }).then(res => setBookmarks(res.data)).catch(() => { });
+    }).then(res => setBookmarks(res.data)).catch(() => {});
   }, [user]);
 
   // 북마크 토글
@@ -615,21 +481,19 @@ export default function FoggedApp() {
       return;
     }
     if (bookmarks.includes(itemId)) {
-      await axios.delete(`https://fogged-interior.onrender.com/api/bookmarks/${itemId}`, {
+      await axios.delete(`${API}/api/bookmarks/${itemId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setBookmarks(p => p.filter(id => id !== itemId));
     } else {
-      await axios.post(`https://fogged-interior.onrender.com/api/bookmarks/${itemId}`, {}, {
+      await axios.post(`${API}/api/bookmarks/${itemId}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setBookmarks(p => [...p, itemId]);
     }
   };
 
-  const allItems = [...defaultItems, ...userItems];
   const filtered = activeMood === "all" ? allItems : allItems.filter(i => i.mood === activeMood);
-
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#0F0F0D", color: "#E8E4DF", fontFamily: "'Courier New', monospace", overflowX: "hidden" }}>
@@ -728,8 +592,8 @@ export default function FoggedApp() {
         </div>
       )}
 
-      {showSaved && <SavedDrawer bookmarks={bookmarks} setBookmarks={setBookmarks} allItems={allItems} onOpen={setSelected} onClose={() => setShowSaved(false)} />}
-      {selected && <Modal item={selected} onClose={() => setSelected(null)} allItems={allItems} onNavigate={setSelected} bookmarks={bookmarks} setBookmarks={setBookmarks} toggleBookmark={toggleBookmark} />}      
+      {showSaved && <SavedDrawer bookmarks={bookmarks} setBookmarks={setBookmarks} allItems={allItems} onOpen={setSelected} onClose={() => setShowSaved(false)} toggleBookmark={toggleBookmark} />}
+      {selected && <Modal item={selected} onClose={() => setSelected(null)} allItems={allItems} onNavigate={setSelected} bookmarks={bookmarks} setBookmarks={setBookmarks} toggleBookmark={toggleBookmark} />}
       {showAuth && (
         <AuthModal
           mode={authMode}
@@ -744,16 +608,13 @@ export default function FoggedApp() {
           onSuccess={(newItem) => {
             const parsed = {
               ...newItem,
-              id: `custom-${newItem.id}`,
               palette: JSON.parse(newItem.palette),
               paletteNames: JSON.parse(newItem.paletteNames),
               tags: JSON.parse(newItem.tags),
               products: [],
               similar: [],
-              isCustom: true,
-              nickname: newItem.nickname,
             };
-            setUserItems(p => [parsed, ...p]);
+            setAllItems(p => [parsed, ...p]);
           }}
         />
       )}
