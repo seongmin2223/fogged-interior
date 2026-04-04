@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-// const API = "https://fogged-interior.onrender.com";
+const API = "https://fogged-interior.onrender.com";
 
-const API = "http://localhost:8080";
+// const API = "http://localhost:8080";
 
 const moods = [
   { id: "all", label: "ALL", kr: "전체" },
@@ -182,7 +182,7 @@ function Modal({ item, onClose, allItems, onNavigate, bookmarks, setBookmarks, t
         .catch(err => console.error(err));
     }
   }, [item.id]);
-  
+
   const deleteItem = async () => {
     if (!window.confirm("이 공간을 영구적으로 삭제하시겠습니까?")) return;
 
