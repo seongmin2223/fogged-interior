@@ -15,20 +15,24 @@ public class BookmarkController {
     private final BookmarkService bookmarkService;
 
     @GetMapping
-    public ResponseEntity<List<Integer>> getBookmarks(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<Integer>> getBookmarks(
+            @RequestHeader(value = "Authorization", required = false) String token) {
         return ResponseEntity.ok(bookmarkService.getBookmarks(token));
     }
 
     @PostMapping("/{itemId}")
-    public ResponseEntity<Void> addBookmark(@RequestHeader("Authorization") String token, @PathVariable Integer itemId) {
+    public ResponseEntity<Void> addBookmark(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @PathVariable Integer itemId) {
         bookmarkService.addBookmark(token, itemId);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{itemId}")
-    public ResponseEntity<Void> removeBookmark(@RequestHeader("Authorization") String token, @PathVariable Integer itemId) {
+    public ResponseEntity<Void> removeBookmark(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @PathVariable Integer itemId) {
         bookmarkService.removeBookmark(token, itemId);
         return ResponseEntity.ok().build();
     }
-
 }

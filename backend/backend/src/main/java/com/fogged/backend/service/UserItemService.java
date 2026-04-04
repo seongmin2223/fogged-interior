@@ -96,4 +96,15 @@ public class UserItemService {
         return new CommentResponse(commentRepository.save(comment));
     }
 
+    @Transactional
+    public void deleteComment(String token, Long commentId) {
+        User user = getUserFromToken(token);
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("댓글을 찾을 수 없습니다."));
+        if (!comment.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("댓글 삭제 권한이 없습니다.");
+        }
+        commentRepository.delete(comment);
+    }
+
 }

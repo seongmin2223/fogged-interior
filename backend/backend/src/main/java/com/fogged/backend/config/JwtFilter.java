@@ -22,15 +22,24 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String auth = request.getHeader("Authorization");
+
+        // 헤더가 있고 "Bearer "로 시작할 때만 검증 로직 실행
         if (auth != null && auth.startsWith("Bearer ")) {
             String token = auth.substring(7);
-            if (jwtUtil.validateToken(token)) {
-                String email = jwtUtil.extractEmail(token);
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(email, null, List.of());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+            try {
+                // 토큰이 비어있지 않고 유효할 때만 인증 정보 설정
+                if (!token.equalsIgnoreCase("null") && !token.isEmpty() && jwtUtil.validateToken(token)) {
+                    String email = jwtUtil.extractEmail(token);
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(email, null, List.of());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            } catch (Exception e) {
+                // 토큰 검증 중 에러가 나면 컨텍스트를 비워서 '익명 사용자'로 처리되게 함
+                SecurityContextHolder.clearContext();
             }
         }
+
         filterChain.doFilter(request, response);
     }
 }

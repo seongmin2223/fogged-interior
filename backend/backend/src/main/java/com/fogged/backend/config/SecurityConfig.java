@@ -31,10 +31,9 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(request -> {
                     var config = new org.springframework.web.cors.CorsConfiguration();
-                    // SecurityConfig.java의 cors 설정 부분
-                    config.addAllowedOrigin("http://localhost:5173"); // 로컬 테스트용
-                    config.addAllowedOrigin("https://fogged-interior.vercel.app"); // 실제 배포용
-                    config.addAllowedOrigin("https://fogged-interior-fkh5medji-seongmin2223s-projects.vercel.app"); // Vercel 미리보기용
+                    // 1. 모든 접속 주소를 명시
+                    config.addAllowedOrigin("http://localhost:5173");
+                    config.addAllowedOrigin("https://fogged-interior.vercel.app");
                     config.addAllowedMethod("*");
                     config.addAllowedHeader("*");
                     config.setAllowCredentials(true);
@@ -44,11 +43,15 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // 2. 인증 없이 통과할 경로들
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/user-items/**").permitAll()
+                        .requestMatchers("/api/user-items", "/api/user-items/**").permitAll()
+                        // 3. 나머지는 인증 필요
                         .anyRequest().authenticated()
                 )
+                // 4. 필터를 수동으로 등록
                 .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 }

@@ -24,17 +24,22 @@ public class UserItemController {
     }
 
     @GetMapping("/my")
-    public ResponseEntity<List<UserItemResponse>> getMyItems(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<UserItemResponse>> getMyItems(
+            @RequestHeader(value = "Authorization", required = false) String token) {
         return ResponseEntity.ok(userItemService.getMyItems(token));
     }
 
     @PostMapping
-    public ResponseEntity<UserItemResponse> createItem(@RequestHeader("Authorization") String token, @RequestBody UserItemRequest request) {
+    public ResponseEntity<UserItemResponse> createItem(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @RequestBody UserItemRequest request) {
         return ResponseEntity.ok(userItemService.createItem(token, request));
     }
 
     @DeleteMapping("/{itemId}")
-    public ResponseEntity<Void> deleteItem(@RequestHeader("Authorization") String token, @PathVariable Long itemId) {
+    public ResponseEntity<Void> deleteItem(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @PathVariable Long itemId) {
         userItemService.deleteItem(token, itemId);
         return ResponseEntity.ok().build();
     }
@@ -45,8 +50,18 @@ public class UserItemController {
     }
 
     @PostMapping("/{itemId}/comments")
-    public ResponseEntity<CommentResponse> addComment(@RequestHeader("Authorization") String token, @PathVariable Long itemId, @RequestBody Map<String, String> body) {
+    public ResponseEntity<CommentResponse> addComment(
+            @RequestHeader(value = "Authorization", required = false) String token,
+            @PathVariable Long itemId,
+            @RequestBody Map<String, String> body) {
         return ResponseEntity.ok(userItemService.addComment(token, itemId, body.get("content")));
     }
 
+    @DeleteMapping("/comments/{commentId}")
+    public ResponseEntity<Void> deleteComment(
+            @RequestHeader("Authorization") String token,
+            @PathVariable Long commentId) {
+        userItemService.deleteComment(token, commentId);
+        return ResponseEntity.ok().build();
+    }
 }

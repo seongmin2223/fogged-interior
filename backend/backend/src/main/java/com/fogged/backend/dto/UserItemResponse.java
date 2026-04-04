@@ -31,7 +31,7 @@ public class UserItemResponse {
         this.palette = item.getPalette();
         this.paletteNames = item.getPaletteNames();
         this.accent = item.getAccent();
-        this.nickname = item.getUser().getNickname();
+        this.nickname = item.getUser() != null ? item.getUser().getNickname() : null;
         this.createdAt = item.getCreatedAt();
     }
 }

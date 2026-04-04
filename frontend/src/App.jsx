@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const API = "https://fogged-interior.onrender.com";
+// const API = "https://fogged-interior.onrender.com";
+
+const API = "http://localhost:8080";
 
 const moods = [
   { id: "all", label: "ALL", kr: "전체" },
@@ -155,12 +157,70 @@ function Modal({ item, onClose, allItems, onNavigate, bookmarks, setBookmarks, t
   const isBookmarked = bookmarks.includes(item.id);
   const similarItems = allItems.filter(i => item.similar.includes(i.id));
 
-  useEffect(() => { document.body.style.overflow = "hidden"; return () => { document.body.style.overflow = ""; }; }, []);
-  useEffect(() => { const fn = (e) => { if (e.key === "Escape") onClose(); }; window.addEventListener("keydown", fn); return () => window.removeEventListener("keydown", fn); }, [onClose]);
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
 
-  const addComment = () => { if (!comment.trim()) return; setComments(p => [...p, { text: comment, time: new Date().toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" }) }]); setComment(""); };
-  const copyHex = (hex) => { navigator.clipboard?.writeText(hex); setCopiedHex(hex); setTimeout(() => setCopiedHex(null), 1600); };
-  const tabs = [{ id: "info", label: "정보" }, { id: "palette", label: "팔레트" }, { id: "products", label: "제품" }, { id: "memo", label: "메모" }];
+  useEffect(() => {
+    const fn = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", fn);
+    return () => window.removeEventListener("keydown", fn);
+  }, [onClose]);
+
+  useEffect(() => {
+    if (item?.id) {
+      axios.get(`${API}/api/user-items/${item.id}/comments`)
+        .then(res => setComments(res.data))
+        .catch(err => console.error(err));
+    }
+  }, [item.id]);
+
+  const addComment = async () => {
+    if (!comment.trim()) return;
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.post(
+        `${API}/api/user-items/${item.id}/comments`,
+        { content: comment },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setComments(p => [...p, res.data]);
+      setComment("");
+    } catch (err) {
+      alert("메모 저장에 실패했습니다.");
+    }
+  };
+
+  const deleteComment = async (commentId) => {
+    if (!window.confirm("메모를 삭제하시겠습니까?")) return;
+    try {
+      const token = localStorage.getItem("token");
+      // 위에서 수정한 Controller 경로에 맞춰 호출 (/api/user-items/comments/{id})
+      await axios.delete(`${API}/api/user-items/comments/${commentId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      // 삭제 성공 시 현재 상태(UI)에서 해당 댓글만 필터링해서 제거
+      setComments(p => p.filter(c => c.id !== commentId));
+    } catch (err) {
+      console.error(err);
+      alert("삭제 권한이 없거나 오류가 발생했습니다.");
+    }
+  };
+
+  const copyHex = (hex) => {
+    navigator.clipboard?.writeText(hex);
+    setCopiedHex(hex);
+    setTimeout(() => setCopiedHex(null), 1600);
+  };
+
+  const tabs = [
+    { id: "info", label: "정보" },
+    { id: "palette", label: "팔레트" },
+    { id: "products", label: "제품" },
+    { id: "memo", label: "메모" }
+  ];
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "flex-end", animation: "fadeIn 0.2s ease" }}>
@@ -188,7 +248,7 @@ function Modal({ item, onClose, allItems, onNavigate, bookmarks, setBookmarks, t
               {tabs.map(t => (
                 <button key={t.id} onClick={() => setTab(t.id)} style={{ padding: "13px 14px", fontSize: 10, letterSpacing: "0.15em", fontFamily: "'Courier New', monospace", background: "transparent", border: "none", borderBottom: tab === t.id ? "1px solid rgba(255,255,255,0.7)" : "1px solid transparent", color: tab === t.id ? "#fff" : "rgba(255,255,255,0.45)", cursor: "pointer", transition: "color 0.2s", marginBottom: -1 }}>{t.label.toUpperCase()}</button>
               ))}
-              <button onClick={onClose} style={{ marginLeft: "auto", background: "transparent", border: "none", color: "rgba(255,255,255,0.45)", cursor: "pointer", fontSize: 11, fontFamily: "'Courier New', monospace", padding: "13px 0", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.45)"}>✕ ESC</button>
+              <button onClick={onClose} style={{ marginLeft: "auto", background: "transparent", border: "none", color: "rgba(255,255,255,0.45)", cursor: "pointer", fontSize: 11, fontFamily: "'Courier New', monospace", padding: "13px 0", transition: "color 0.2s" }}>✕ ESC</button>
             </div>
             <div style={{ flex: 1, overflowY: "auto", padding: "22px" }}>
               {tab === "info" && (
@@ -201,7 +261,7 @@ function Modal({ item, onClose, allItems, onNavigate, bookmarks, setBookmarks, t
                   <div style={{ fontSize: 9, letterSpacing: "0.22em", color: "rgba(255,255,255,0.45)", marginBottom: 12, fontFamily: "'Courier New', monospace" }}>— SIMILAR SPACES</div>
                   <div style={{ display: "flex", gap: 10 }}>
                     {similarItems.map(s => (
-                      <div key={s.id} onClick={() => onNavigate(s)} style={{ flex: 1, height: 78, borderRadius: 2, cursor: "pointer", position: "relative", overflow: "hidden", transition: "transform 0.3s" }} onMouseEnter={e => e.currentTarget.style.transform = "translateY(-3px)"} onMouseLeave={e => e.currentTarget.style.transform = ""}>
+                      <div key={s.id} onClick={() => onNavigate(s)} style={{ flex: 1, height: 78, borderRadius: 2, cursor: "pointer", position: "relative", overflow: "hidden", transition: "transform 0.3s" }}>
                         <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at 30% 30%, ${s.palette[0]}CC, transparent 55%), linear-gradient(135deg, ${s.palette[1]}, ${s.palette[2]})` }} />
                         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.6), transparent)", display: "flex", alignItems: "flex-end", padding: "8px 10px" }}>
                           <span style={{ fontSize: 10, color: "#fff", fontFamily: "'Georgia', serif", textShadow: "0 1px 3px rgba(0,0,0,0.5)" }}>{s.title}</span>
@@ -219,7 +279,7 @@ function Modal({ item, onClose, allItems, onNavigate, bookmarks, setBookmarks, t
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                     {item.palette.map((c, i) => (
-                      <div key={i} onClick={() => copyHex(c)} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 12px", borderRadius: 2, border: "1px solid rgba(255,255,255,0.1)", cursor: "pointer", transition: "background 0.2s", background: copiedHex === c ? "rgba(255,255,255,0.08)" : "transparent" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.06)"} onMouseLeave={e => e.currentTarget.style.background = copiedHex === c ? "rgba(255,255,255,0.08)" : "transparent"}>
+                      <div key={i} onClick={() => copyHex(c)} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 12px", borderRadius: 2, border: "1px solid rgba(255,255,255,0.1)", cursor: "pointer", transition: "background 0.2s", background: copiedHex === c ? "rgba(255,255,255,0.08)" : "transparent" }}>
                         <div style={{ width: 34, height: 34, borderRadius: 2, backgroundColor: c, border: "1px solid rgba(255,255,255,0.2)", flexShrink: 0 }} />
                         <div><div style={{ fontSize: 12, color: "#fff", fontFamily: "'Georgia', serif", marginBottom: 2 }}>{item.paletteNames[i]}</div><div style={{ fontSize: 9, color: "rgba(255,255,255,0.55)", fontFamily: "'Courier New', monospace", letterSpacing: "0.1em" }}>{c.toUpperCase()}</div></div>
                         <div style={{ marginLeft: "auto", fontSize: 9, color: copiedHex === c ? "#fff" : "rgba(255,255,255,0.4)", fontFamily: "'Courier New', monospace" }}>{copiedHex === c ? "COPIED ✓" : "COPY"}</div>
@@ -233,7 +293,7 @@ function Modal({ item, onClose, allItems, onNavigate, bookmarks, setBookmarks, t
                   <div style={{ fontSize: 9, letterSpacing: "0.25em", color: "rgba(255,255,255,0.45)", marginBottom: 18, fontFamily: "'Courier New', monospace" }}>— CURATED PRODUCTS</div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                     {item.products.map((p, i) => (
-                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 14, padding: "13px 14px", borderRadius: 2, border: "1px solid rgba(255,255,255,0.1)", cursor: "pointer", transition: "all 0.22s" }} onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)"; }} onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; }}>
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 14, padding: "13px 14px", borderRadius: 2, border: "1px solid rgba(255,255,255,0.1)", cursor: "pointer", transition: "all 0.22s" }}>
                         <div style={{ width: 38, height: 38, borderRadius: 2, flexShrink: 0, backgroundColor: item.palette[i % item.palette.length], border: "1px solid rgba(255,255,255,0.15)" }} />
                         <div style={{ flex: 1 }}><div style={{ fontSize: 12, color: "#fff", fontFamily: "'Georgia', serif", marginBottom: 3 }}>{p.name}</div><div style={{ fontSize: 9, color: "rgba(255,255,255,0.5)", fontFamily: "'Courier New', monospace", letterSpacing: "0.12em" }}>{p.brand}</div></div>
                         <div style={{ textAlign: "right" }}><div style={{ fontSize: 11, color: "rgba(255,255,255,0.75)", fontFamily: "'Courier New', monospace", marginBottom: 3 }}>{p.price}</div><div style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", fontFamily: "'Courier New', monospace" }}>LINK →</div></div>
@@ -245,18 +305,42 @@ function Modal({ item, onClose, allItems, onNavigate, bookmarks, setBookmarks, t
               {tab === "memo" && (
                 <div style={{ animation: "fadeUp 0.3s ease" }}>
                   <div style={{ fontSize: 9, letterSpacing: "0.25em", color: "rgba(255,255,255,0.45)", marginBottom: 16, fontFamily: "'Courier New', monospace" }}>— MY NOTES</div>
-                  <textarea value={comment} onChange={e => setComment(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) addComment(); }} placeholder="이 공간에 대한 메모를 남겨보세요..." style={{ width: "100%", minHeight: 88, backgroundColor: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 2, padding: "12px 13px", color: "#fff", fontSize: 12, fontFamily: "'Georgia', serif", lineHeight: 1.8, resize: "none", outline: "none", transition: "border-color 0.2s" }} onFocus={e => e.target.style.borderColor = "rgba(255,255,255,0.35)"} onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.12)"} />
+                  <textarea value={comment} onChange={e => setComment(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) addComment(); }} placeholder="이 공간에 대한 메모를 남겨보세요..." style={{ width: "100%", minHeight: 88, backgroundColor: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 2, padding: "12px 13px", color: "#fff", fontSize: 12, fontFamily: "'Georgia', serif", lineHeight: 1.8, resize: "none", outline: "none" }} />
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8, marginBottom: 20 }}>
                     <span style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", fontFamily: "'Courier New', monospace" }}>⌘ + ENTER</span>
-                    <button onClick={addComment} style={{ padding: "6px 15px", fontSize: 9, letterSpacing: "0.15em", fontFamily: "'Courier New', monospace", border: "1px solid rgba(255,255,255,0.2)", background: "transparent", color: "rgba(255,255,255,0.7)", cursor: "pointer", borderRadius: 1, transition: "all 0.2s" }} onMouseEnter={e => { e.target.style.background = "rgba(255,255,255,0.1)"; e.target.style.color = "#fff"; }} onMouseLeave={e => { e.target.style.background = "transparent"; e.target.style.color = "rgba(255,255,255,0.7)"; }}>SAVE</button>
+                    <button onClick={addComment} style={{ padding: "6px 15px", fontSize: 9, letterSpacing: "0.15em", fontFamily: "'Courier New', monospace", border: "1px solid rgba(255,255,255,0.2)", background: "transparent", color: "rgba(255,255,255,0.7)", cursor: "pointer", borderRadius: 1 }}>SAVE</button>
                   </div>
                   {comments.length === 0
                     ? <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", fontFamily: "'Courier New', monospace", textAlign: "center", padding: "24px 0" }}>— 아직 메모가 없습니다 —</div>
                     : <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
                       {comments.map((c, i) => (
                         <div key={i} style={{ padding: "11px 13px", borderRadius: 2, border: "1px solid rgba(255,255,255,0.1)", borderLeft: `2px solid ${item.accent}` }}>
-                          <p style={{ fontSize: 12, color: "rgba(255,255,255,0.82)", fontFamily: "'Georgia', serif", lineHeight: 1.75, marginBottom: 5 }}>{c.text}</p>
-                          <span style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", fontFamily: "'Courier New', monospace" }}>{c.time}</span>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.82)", fontFamily: "'Georgia', serif", lineHeight: 1.75, marginBottom: 5, flex: 1 }}>
+                              {c.content}
+                            </p>
+                            {/* 삭제 버튼 추가 */}
+                            <button
+                              onClick={() => deleteComment(c.id)}
+                              style={{
+                                background: "transparent",
+                                border: "none",
+                                color: "#fff",
+                                fontSize: 9,
+                                cursor: "pointer",
+                                padding: "0 0 0 10px",
+                                fontFamily: "'Courier New', monospace",
+                                transition: "color 0.2s"
+                              }}
+                              onMouseEnter={e => e.target.style.color = "#ff4d4d"}
+                              onMouseLeave={e => e.target.style.color = "#fff"}
+                            >
+                              DELETE
+                            </button>
+                          </div>
+                          <span style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", fontFamily: "'Courier New', monospace" }}>
+                            {c.nickname || "익명"}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -460,7 +544,7 @@ export default function FoggedApp() {
           similar: [],
         })));
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   // 북마크 불러오기
@@ -472,7 +556,7 @@ export default function FoggedApp() {
     }).then(res => {
       // 실제 존재하는 아이템 id만 필터링
       setBookmarks(res.data.filter(id => allItems.some(item => item.id === id)));
-    }).catch(() => {});
+    }).catch(() => { });
   }, [user, allItems]);
 
   // 북마크 토글
