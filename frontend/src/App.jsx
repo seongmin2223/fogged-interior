@@ -1,5 +1,7 @@
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
+
+const API = "https://fogged-interior.onrender.com";
 
 const moods = [
   { id: "all", label: "ALL", kr: "전체" },
@@ -10,7 +12,7 @@ const moods = [
   { id: "ash", label: "ASH", kr: "재" },
 ];
 
-const items = [
+const defaultItems = [
   {
     id: 1, mood: "fog",
     title: "Mist Corridor",
@@ -416,6 +418,103 @@ function Modal({ item, onClose, allItems, onNavigate, bookmarks, setBookmarks, t
   );
 }
 
+function CreateModal({ onClose, onSuccess }) {
+  const [form, setForm] = useState({
+    title: "", desc: "", mood: "fog", size: "medium",
+    longDesc: "", tags: "",
+    palette: ["#E8E4DF", "#C9C0B5", "#A89F94", "#D4CFC9", "#F0EDE8"],
+    paletteNames: ["", "", "", "", ""],
+    accent: "#E8E4DF"
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async () => {
+    if (!form.title || !form.desc) { setError("제목과 설명은 필수예요."); return; }
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const payload = {
+        title: form.title,
+        desc: form.desc,
+        mood: form.mood,
+        size: form.size,
+        longDesc: form.longDesc,
+        tags: JSON.stringify(form.tags.split(",").map(t => t.trim()).filter(Boolean)),
+        palette: JSON.stringify(form.palette),
+        paletteNames: JSON.stringify(form.paletteNames),
+        accent: form.accent,
+      };
+      const res = await axios.post(`${API}/api/user-items`, payload, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      onSuccess(res.data);
+      onClose();
+    } catch (e) {
+      setError("저장에 실패했어요. 다시 시도해주세요.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const inputStyle = { padding: "10px 13px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 2, color: "#fff", fontSize: 12, fontFamily: "'Courier New', monospace", outline: "none", width: "100%" };
+
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 500, display: "flex", alignItems: "center", justifyContent: "center", animation: "fadeIn 0.2s ease" }}>
+      <div onClick={onClose} style={{ position: "absolute", inset: 0, backgroundColor: "rgba(0,0,0,0.82)", backdropFilter: "blur(10px)" }} />
+      <div style={{ position: "relative", zIndex: 1, width: "90%", maxWidth: 520, backgroundColor: "#141412", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "44px 40px", animation: "fadeUp 0.35s ease", maxHeight: "90vh", overflowY: "auto" }}>
+        <button onClick={onClose} style={{ position: "absolute", top: 18, right: 18, background: "transparent", border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.5)", cursor: "pointer", width: 28, height: 28, borderRadius: "50%", fontSize: 10 }}>✕</button>
+        <div style={{ fontSize: 9, letterSpacing: "0.3em", color: "rgba(255,255,255,0.35)", fontFamily: "'Courier New', monospace", marginBottom: 16 }}>— CREATE CURATION</div>
+        <h2 style={{ fontSize: 22, fontFamily: "'Georgia', serif", color: "#fff", fontWeight: 400, marginBottom: 28 }}>나만의 공간 만들기</h2>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <input value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="공간 이름" style={inputStyle} />
+          <input value={form.desc} onChange={e => setForm(p => ({ ...p, desc: e.target.value }))} placeholder="한 줄 설명" style={inputStyle} />
+          <textarea value={form.longDesc} onChange={e => setForm(p => ({ ...p, longDesc: e.target.value }))} placeholder="공간 설명 (선택)" style={{ ...inputStyle, minHeight: 80, resize: "none" }} />
+          <input value={form.tags} onChange={e => setForm(p => ({ ...p, tags: e.target.value }))} placeholder="태그 (쉼표로 구분, 예: #린넨, #화이트)" style={inputStyle} />
+
+          <div style={{ display: "flex", gap: 8 }}>
+            {["fog", "dusk", "void", "dawn", "ash"].map(m => (
+              <button key={m} onClick={() => setForm(p => ({ ...p, mood: m }))}
+                style={{ flex: 1, padding: "7px 0", fontSize: 9, letterSpacing: "0.15em", fontFamily: "'Courier New', monospace", border: form.mood === m ? "1px solid rgba(255,255,255,0.6)" : "1px solid rgba(255,255,255,0.12)", background: form.mood === m ? "rgba(255,255,255,0.1)" : "transparent", color: form.mood === m ? "#fff" : "rgba(255,255,255,0.45)", cursor: "pointer", borderRadius: 1 }}>
+                {m.toUpperCase()}
+              </button>
+            ))}
+          </div>
+
+          <div style={{ display: "flex", gap: 8 }}>
+            {["small", "medium", "large"].map(s => (
+              <button key={s} onClick={() => setForm(p => ({ ...p, size: s }))}
+                style={{ flex: 1, padding: "7px 0", fontSize: 9, letterSpacing: "0.15em", fontFamily: "'Courier New', monospace", border: form.size === s ? "1px solid rgba(255,255,255,0.6)" : "1px solid rgba(255,255,255,0.12)", background: form.size === s ? "rgba(255,255,255,0.1)" : "transparent", color: form.size === s ? "#fff" : "rgba(255,255,255,0.45)", cursor: "pointer", borderRadius: 1 }}>
+                {s.toUpperCase()}
+              </button>
+            ))}
+          </div>
+
+          <div style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(255,255,255,0.45)", fontFamily: "'Courier New', monospace", marginTop: 4 }}>— PALETTE</div>
+          <div style={{ display: "flex", gap: 8 }}>
+            {form.palette.map((c, i) => (
+              <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
+                <input type="color" value={c} onChange={e => { const p = [...form.palette]; p[i] = e.target.value; setForm(prev => ({ ...prev, palette: p, accent: p[0] })); }}
+                  style={{ width: "100%", height: 40, border: "1px solid rgba(255,255,255,0.12)", borderRadius: 2, cursor: "pointer", background: "transparent", padding: 2 }} />
+                <input value={form.paletteNames[i]} onChange={e => { const n = [...form.paletteNames]; n[i] = e.target.value; setForm(prev => ({ ...prev, paletteNames: n })); }}
+                  placeholder={`색상 ${i + 1}`} style={{ ...inputStyle, fontSize: 9, padding: "5px 8px" }} />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {error && <div style={{ fontSize: 11, color: "rgba(255,180,180,0.9)", fontFamily: "'Courier New', monospace", marginTop: 14 }}>{error}</div>}
+
+        <button onClick={handleSubmit} disabled={loading}
+          style={{ width: "100%", padding: "12px", fontSize: 10, letterSpacing: "0.2em", fontFamily: "'Courier New', monospace", border: "1px solid rgba(255,255,255,0.3)", background: "rgba(255,255,255,0.08)", color: "#fff", cursor: "pointer", borderRadius: 2, transition: "all 0.2s", marginTop: 20 }}>
+          {loading ? "..." : "CREATE SPACE"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function SavedDrawer({ bookmarks, setBookmarks, allItems, onOpen, onClose }) {
   const saved = allItems.filter(i => bookmarks.includes(i.id));
   useEffect(() => { document.body.style.overflow = "hidden"; return () => { document.body.style.overflow = ""; }; }, []);
@@ -482,6 +581,8 @@ export default function FoggedApp() {
   const [showAuth, setShowAuth] = useState(false);
   const [authMode, setAuthMode] = useState("login"); // "login" | "signup"
   const [user, setUser] = useState(null);
+  const [userItems, setUserItems] = useState([]);
+  const [showCreate, setShowCreate] = useState(false);
   // const [authForm, setAuthForm] = useState({ email: "", password: "", nickname: ""});
   // const [authError, setAuthError] = useState("");
 
@@ -526,7 +627,9 @@ export default function FoggedApp() {
     }
   };
 
-  const filtered = activeMood === "all" ? items : items.filter(i => i.mood === activeMood);
+  const allItems = [...defaultItems, ...userItems];
+  const filtered = activeMood === "all" ? allItems : allItems.filter(i => i.mood === activeMood);
+
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#0F0F0D", color: "#E8E4DF", fontFamily: "'Courier New', monospace", overflowX: "hidden" }}>
@@ -552,6 +655,12 @@ export default function FoggedApp() {
           )}
           <span onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(255,255,255,0.45)", cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.45)"}>DISCOVER</span>
           <span onClick={() => setShowAbout(true)} style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(255,255,255,0.45)", cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "#fff"} onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.45)"}>ABOUT</span>
+          {user && (
+            <span onClick={() => setShowCreate(true)}
+              style={{ fontSize: 9, letterSpacing: "0.2em", color: "rgba(255,255,255,0.45)", cursor: "pointer", transition: "color 0.2s" }}
+              onMouseEnter={e => e.target.style.color = "#fff"}
+              onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.45)"}>+ CREATE</span>
+          )}
           {user ? (
             <span onClick={() => { setUser(null); localStorage.removeItem("token"); localStorage.removeItem("nickname"); }}
               style={{ fontSize: 9, letterSpacing: "0.15em", color: "rgba(255,255,255,0.7)", fontFamily: "'Courier New', monospace", cursor: "pointer", padding: "4px 10px", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 1, transition: "all 0.2s" }}
@@ -627,6 +736,25 @@ export default function FoggedApp() {
           setMode={setAuthMode}
           onClose={() => setShowAuth(false)}
           onSuccess={(userData) => setUser(userData)}
+        />
+      )}
+      {showCreate && (
+        <CreateModal
+          onClose={() => setShowCreate(false)}
+          onSuccess={(newItem) => {
+            const parsed = {
+              ...newItem,
+              id: `custom-${newItem.id}`,
+              palette: JSON.parse(newItem.palette),
+              paletteNames: JSON.parse(newItem.paletteNames),
+              tags: JSON.parse(newItem.tags),
+              products: [],
+              similar: [],
+              isCustom: true,
+              nickname: newItem.nickname,
+            };
+            setUserItems(p => [parsed, ...p]);
+          }}
         />
       )}
     </div>
