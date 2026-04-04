@@ -728,8 +728,8 @@ export default function FoggedApp() {
         </div>
       )}
 
-      {showSaved && <SavedDrawer bookmarks={bookmarks} setBookmarks={setBookmarks} allItems={items} onOpen={setSelected} onClose={() => setShowSaved(false)} />}
-      {selected && <Modal item={selected} onClose={() => setSelected(null)} allItems={items} onNavigate={setSelected} bookmarks={bookmarks} setBookmarks={setBookmarks} toggleBookmark={toggleBookmark} />}      
+      {showSaved && <SavedDrawer bookmarks={bookmarks} setBookmarks={setBookmarks} allItems={allItems} onOpen={setSelected} onClose={() => setShowSaved(false)} />}
+      {selected && <Modal item={selected} onClose={() => setSelected(null)} allItems={allItems} onNavigate={setSelected} bookmarks={bookmarks} setBookmarks={setBookmarks} toggleBookmark={toggleBookmark} />}      
       {showAuth && (
         <AuthModal
           mode={authMode}
