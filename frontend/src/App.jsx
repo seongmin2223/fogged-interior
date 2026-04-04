@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-// const API = "https://fogged-interior.onrender.com";
+const API = "https://fogged-interior.onrender.com";
 
-const API = "http://localhost:8080";
+// const API = "http://localhost:8080";
 
 const moods = [
   { id: "all", label: "ALL", kr: "전체" },
