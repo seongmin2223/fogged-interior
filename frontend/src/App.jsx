@@ -469,8 +469,11 @@ export default function FoggedApp() {
     if (!token) return;
     axios.get(`${API}/api/bookmarks`, {
       headers: { Authorization: `Bearer ${token}` }
-    }).then(res => setBookmarks(res.data)).catch(() => {});
-  }, [user]);
+    }).then(res => {
+      // 실제 존재하는 아이템 id만 필터링
+      setBookmarks(res.data.filter(id => allItems.some(item => item.id === id)));
+    }).catch(() => {});
+  }, [user, allItems]);
 
   // 북마크 토글
   const toggleBookmark = async (itemId) => {
